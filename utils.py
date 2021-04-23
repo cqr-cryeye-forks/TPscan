@@ -49,6 +49,7 @@ def parse_results(results: list) -> list:
     output = []
     for item in results:
         if isinstance(item, dict) and item.get('isvul'):
+            print(f'Vuln found: {item.get("vulnname")}, url: {item.get("vulnurl")}')
             output.append(item)
         elif isinstance(item, list):
             results.extend(item)

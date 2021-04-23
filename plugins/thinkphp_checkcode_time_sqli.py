@@ -8,7 +8,7 @@ import requests
 from utils import get_pocdict
 
 headers = {
-    "User-Agent": "TPscan",
+    "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:87.0) Gecko/20100101 Firefox/87.0",
     "DNT": "1",
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
     "Content-Type": "multipart/form-data; boundary=--------641902708",
