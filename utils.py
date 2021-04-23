@@ -12,7 +12,7 @@ def parse_args() -> argparse.Namespace:
 
 def get_pocdict(vulnname: str) -> dict:
     return {
-        'vulnname': vulnname.split('.')[-1],
+        'vulnname': vulnname.split('.')[-1].replace('_', ' ').capitalize(),
         'isvul': False,
         'vulnurl': None,
         'payload': None,
