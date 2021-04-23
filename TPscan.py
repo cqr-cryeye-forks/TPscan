@@ -1,57 +1,31 @@
 #!/usr/bin/env python
 # coding=utf-8
-from gevent import monkey;monkey.patch_all()
-from gevent.pool import Pool
-from plugins.thinkphp_checkcode_time_sqli import thinkphp_checkcode_time_sqli_verify
-from plugins.thinkphp_construct_code_exec import thinkphp_construct_code_exec_verify
-from plugins.thinkphp_construct_debug_rce import thinkphp_construct_debug_rce_verify
-from plugins.thinkphp_debug_index_ids_sqli import thinkphp_debug_index_ids_sqli_verify
-from plugins.thinkphp_driver_display_rce import thinkphp_driver_display_rce_verify
-from plugins.thinkphp_index_construct_rce import thinkphp_index_construct_rce_verify
-from plugins.thinkphp_index_showid_rce import thinkphp_index_showid_rce_verify
-from plugins.thinkphp_invoke_func_code_exec import thinkphp_invoke_func_code_exec_verify
-from plugins.thinkphp_lite_code_exec import thinkphp_lite_code_exec_verify
-from plugins.thinkphp_method_filter_code_exec import thinkphp_method_filter_code_exec_verify
-from plugins.thinkphp_multi_sql_leak import thinkphp_multi_sql_leak_verify
-from plugins.thinkphp_pay_orderid_sqli import thinkphp_pay_orderid_sqli_verify
-from plugins.thinkphp_request_input_rce import thinkphp_request_input_rce_verify
-from plugins.thinkphp_view_recent_xff_sqli import thinkphp_view_recent_xff_sqli_verify
 
-import sys
-import gevent
-print('''
- ___________                    
-|_   _| ___ \                   
-  | | | |_/ /__  ___ __ _ _ __  
-  | | |  __/ __|/ __/ _` | '_ \ 
-  | | | |  \__ \ (_| (_| | | | |
-  \_/ \_|  |___/\___\__,_|_| |_|          
-                code by Lucifer
-''')
-targeturl = input("[*]Give me a target: ")
-if targeturl.find('http') == -1:
-    exit(1)
-poclist = [
-    'thinkphp_checkcode_time_sqli_verify("{0}")'.format(targeturl),
-    'thinkphp_construct_code_exec_verify("{0}")'.format(targeturl),
-    'thinkphp_construct_debug_rce_verify("{0}")'.format(targeturl),
-    'thinkphp_debug_index_ids_sqli_verify("{0}")'.format(targeturl),
-    'thinkphp_driver_display_rce_verify("{0}")'.format(targeturl),
-    'thinkphp_index_construct_rce_verify("{0}")'.format(targeturl),
-    'thinkphp_index_showid_rce_verify("{0}")'.format(targeturl),
-    'thinkphp_invoke_func_code_exec_verify("{0}")'.format(targeturl),
-    'thinkphp_lite_code_exec_verify("{0}")'.format(targeturl),
-    'thinkphp_method_filter_code_exec_verify("{0}")'.format(targeturl),
-    'thinkphp_multi_sql_leak_verify("{0}")'.format(targeturl),
-    'thinkphp_pay_orderid_sqli_verify("{0}")'.format(targeturl),
-    'thinkphp_request_input_rce_verify("{0}")'.format(targeturl),
-    'thinkphp_view_recent_xff_sqli_verify("{0}")'.format(targeturl),
-]
+import asyncio
+import json
+from inspect import getmembers, isfunction
 
-def pocexec(pocstr):
-    exec(pocstr)
-    gevent.sleep(0)
+import urllib3
 
-pool = Pool(10)
-threads = [pool.spawn(pocexec, item) for item in poclist]
-gevent.joinall(threads)
+import plugins
+from utils import *
+
+urllib3.disable_warnings()
+
+
+def main():
+    print('Start!')
+    args = parse_args()
+    if not acknowledge_url(url=args.url):
+        exit(1)
+    url = parse_base_url(url=args.url)
+    tasks = [asyncio.ensure_future(func(url)) for _, func in getmembers(plugins, isfunction)]
+    loop = asyncio.get_event_loop()
+    results = parse_results(results=list(loop.run_until_complete(asyncio.gather(*tasks))))
+    with open('output.json', 'w') as f:
+        json.dump(results, f, indent=2)
+    print('Done!')
+
+
+if __name__ == '__main__':
+    main()
